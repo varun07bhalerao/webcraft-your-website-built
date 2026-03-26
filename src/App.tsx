@@ -36,13 +36,13 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Index />} />
     <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
-    <Route path="/dashboard" element={<ProtectedRoute><ProjectProvider><Dashboard /></ProjectProvider></ProtectedRoute>} />
-    <Route path="/wizard/:id/details" element={<ProtectedRoute><ProjectProvider><WizardDetails /></ProjectProvider></ProtectedRoute>} />
-    <Route path="/wizard/:id/type" element={<ProtectedRoute><ProjectProvider><WizardType /></ProjectProvider></ProtectedRoute>} />
-    <Route path="/wizard/:id/template" element={<ProtectedRoute><ProjectProvider><WizardTemplate /></ProjectProvider></ProtectedRoute>} />
-    <Route path="/editor/:id" element={<ProtectedRoute><ProjectProvider><Editor /></ProjectProvider></ProtectedRoute>} />
-    <Route path="/preview/:id" element={<ProtectedRoute><ProjectProvider><Preview /></ProjectProvider></ProtectedRoute>} />
-    <Route path="/deploy/:id" element={<ProtectedRoute><ProjectProvider><Deploy /></ProjectProvider></ProtectedRoute>} />
+    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+    <Route path="/wizard/:id/details" element={<ProtectedRoute><WizardDetails /></ProtectedRoute>} />
+    <Route path="/wizard/:id/type" element={<ProtectedRoute><WizardType /></ProtectedRoute>} />
+    <Route path="/wizard/:id/template" element={<ProtectedRoute><WizardTemplate /></ProtectedRoute>} />
+    <Route path="/editor/:id" element={<ProtectedRoute><Editor /></ProtectedRoute>} />
+    <Route path="/preview/:id" element={<ProtectedRoute><Preview /></ProtectedRoute>} />
+    <Route path="/deploy/:id" element={<ProtectedRoute><Deploy /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
@@ -54,7 +54,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AppRoutes />
+          <ProjectProvider>
+            <AppRoutes />
+          </ProjectProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

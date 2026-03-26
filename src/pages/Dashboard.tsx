@@ -18,8 +18,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleNew = () => {
-    const id = createProject();
-    navigate(`/wizard/${id}/details`);
+    navigate(`/wizard/new/details`);
   };
 
   const handleOpen = (p: typeof projects[0]) => {
@@ -58,7 +57,7 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {projects.length === 0 ? (
+        {projects.filter(p => p.name && p.name.trim() !== '').length === 0 ? (
           <div className="text-center py-24 animate-fade-in">
             <div className="w-20 h-20 rounded-3xl gradient-bg mx-auto flex items-center justify-center mb-6">
               <Globe className="w-10 h-10 text-primary-foreground" />
@@ -73,7 +72,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((p, i) => (
+            {projects.filter(p => p.name && p.name.trim() !== '').map((p, i) => (
               <div
                 key={p.id}
                 className="group bg-card rounded-2xl border border-border p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-300 cursor-pointer animate-fade-in"

@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { collection, query, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { toast } from 'sonner';
 import { useAuth } from './AuthContext';
 
 export type WebsiteType = 'business' | 'portfolio' | 'education' | 'event' | 'blog';
@@ -19,7 +22,7 @@ export interface WebsiteProject {
 interface ProjectContextType {
   projects: WebsiteProject[];
   currentProject: WebsiteProject | null;
-  createProject: () => string;
+  createProject: (initialData?: Partial<WebsiteProject>) => string;
   updateProject: (id: string, data: Partial<WebsiteProject>) => void;
   deleteProject: (id: string) => void;
   setCurrentProject: (p: WebsiteProject | null) => void;
@@ -38,43 +41,85 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
   const [projects, setProjects] = useState<WebsiteProject[]>([]);
   const [currentProject, setCurrentProject] = useState<WebsiteProject | null>(null);
 
-  const storageKey = user ? `webcraft_projects_${user.uid}` : null;
-
   useEffect(() => {
-    if (storageKey) {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) setProjects(JSON.parse(stored));
-      else setProjects([]);
-    } else {
-      setProjects([]);
-    }
-  }, [storageKey]);
+    const fetchProjects = async () => {
+      if (user?.uid && db) {
+        try {
+          const q = query(collection(db, `users/${user.uid}/projects`));
+          const snap = await getDocs(q);
+          const loaded: WebsiteProject[] = [];
+          snap.forEach((d) => loaded.push(d.data() as WebsiteProject));
+          setProjects(loaded);
+        } catch (err) {
+          console.error("Error fetching projects:", err);
+          toast.error("Failed to load your projects.");
+        }
+      } else {
+        setProjects([]);
+      }
+    };
+    fetchProjects();
+  }, [user]);
 
-  const save = (p: WebsiteProject[]) => {
-    setProjects(p);
-    if (storageKey) localStorage.setItem(storageKey, JSON.stringify(p));
+  const saveToFirestore = async (p: WebsiteProject) => {
+    if (!user?.uid || !db) return;
+    try {
+      await setDoc(doc(db, `users/${user.uid}/projects/${p.id}`), p);
+    } catch (err) {
+      console.error("Firestore sync error:", err);
+    }
   };
 
-  const createProject = () => {
+  const deleteFromFirestore = async (id: string) => {
+    if (!user?.uid || !db) return;
+    try {
+      await deleteDoc(doc(db, `users/${user.uid}/projects/${id}`));
+    } catch (err) {
+      console.error("Firestore sync error:", err);
+    }
+  };
+
+  const createProject = (initialData?: Partial<WebsiteProject>) => {
     const id = crypto.randomUUID();
     const p: WebsiteProject = {
-      id, name: '', type: 'business', template: 0,
-      createdAt: new Date().toISOString(), content: {}
+      id, 
+      name: '', 
+      type: 'business', 
+      template: 0,
+      createdAt: new Date().toISOString(), 
+      content: {},
+      ...(initialData || {})
     };
-    save([...projects, p]);
+    setProjects(prev => [...prev, p]);
     setCurrentProject(p);
+    saveToFirestore(p);
     return id;
   };
 
   const updateProject = (id: string, data: Partial<WebsiteProject>) => {
-    const updated = projects.map(p => p.id === id ? { ...p, ...data } : p);
-    save(updated);
-    if (currentProject?.id === id) setCurrentProject({ ...currentProject, ...data });
+    setProjects(prev => {
+      const next = prev.map(p => {
+        if (p.id === id) {
+          const updated = { ...p, ...data };
+          // We'll call saveToFirestore here for simplicity and to ensure we have the absolute latest 'p'
+          // but we'll do it in a way that doesn't block.
+          saveToFirestore(updated);
+          return updated;
+        }
+        return p;
+      });
+      return next;
+    });
+
+    if (currentProject?.id === id) {
+      setCurrentProject(prev => prev ? { ...prev, ...data } : null);
+    }
   };
 
   const deleteProject = (id: string) => {
-    save(projects.filter(p => p.id !== id));
+    setProjects(prev => prev.filter(p => p.id !== id));
     if (currentProject?.id === id) setCurrentProject(null);
+    deleteFromFirestore(id);
   };
 
   return (

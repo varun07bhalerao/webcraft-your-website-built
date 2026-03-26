@@ -1,9 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  updateProfile,
+  signInWithPopup
+} from 'firebase/auth';
+import { auth, googleProvider } from '../lib/firebase';
+import { toast } from 'sonner';
 
 interface User {
   email: string;
   uid: string;
-  displayName?: string;
+  displayName?: string | null;
 }
 
 interface AuthContextType {
@@ -11,7 +21,8 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -27,31 +38,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem('webcraft_user');
-    if (stored) setUser(JSON.parse(stored));
-    setLoading(false);
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser && firebaseUser.email) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, _password: string) => {
-    const u = { email, uid: btoa(email), displayName: email.split('@')[0] };
-    localStorage.setItem('webcraft_user', JSON.stringify(u));
-    setUser(u);
+  const login = async (email: string, password: string) => {
+    if (!auth) throw new Error("Firebase Auth not initialized");
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signup = async (email: string, _password: string, name: string) => {
-    const u = { email, uid: btoa(email), displayName: name };
-    localStorage.setItem('webcraft_user', JSON.stringify(u));
-    setUser(u);
+  const signup = async (email: string, password: string, name: string) => {
+    if (!auth) throw new Error("Firebase Auth not initialized");
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+    setUser({
+      uid: userCredential.user.uid,
+      email: userCredential.user.email!,
+      displayName: name,
+    });
   };
 
-  const logout = () => {
-    localStorage.removeItem('webcraft_user');
-    setUser(null);
+  const loginWithGoogle = async () => {
+    if (!auth || !googleProvider) {
+      toast.error("Google authentication is not configured.");
+      return;
+    }
+    await signInWithPopup(auth, googleProvider);
+  };
+
+  const logout = async () => {
+    if (!auth) return;
+    await signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, loginWithGoogle }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

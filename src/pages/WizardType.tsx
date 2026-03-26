@@ -20,7 +20,7 @@ const iconColors: Record<string, string> = {
 
 const WizardType = () => {
   const { id } = useParams<{ id: string }>();
-  const { updateProject } = useProjects();
+  const { updateProject, currentProject } = useProjects();
   const navigate = useNavigate();
 
   const select = (type: WebsiteType) => {
@@ -28,6 +28,8 @@ const WizardType = () => {
     updateProject(id, { type });
     navigate(`/wizard/${id}/template`);
   };
+
+  const isSelected = (type: WebsiteType) => currentProject?.type === type;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -46,11 +48,17 @@ const WizardType = () => {
             <button
               key={t.key}
               onClick={() => select(t.key)}
-              className={`group text-left p-6 rounded-2xl border-2 ${t.color} bg-gradient-to-br ${t.gradient} transition-all duration-300 hover:shadow-lg hover:scale-[1.02] animate-fade-in`}
+              className={`group text-left p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] animate-fade-in ${
+                isSelected(t.key) 
+                  ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
+                  : `${t.color} bg-gradient-to-br ${t.gradient}`
+              }`}
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className={`w-12 h-12 rounded-xl bg-card flex items-center justify-center mb-4 shadow-sm group-hover:animate-float`}>
-                <t.icon className={`w-6 h-6 ${iconColors[t.key]}`} />
+              <div className={`w-12 h-12 rounded-xl bg-card flex items-center justify-center mb-4 shadow-sm group-hover:animate-float ${
+                isSelected(t.key) ? 'bg-primary/10' : ''
+              }`}>
+                <t.icon className={`w-6 h-6 ${isSelected(t.key) ? 'text-primary' : iconColors[t.key]}`} />
               </div>
               <h3 className="text-lg font-semibold mb-1">{t.label}</h3>
               <p className="text-sm text-muted-foreground">{t.desc}</p>
