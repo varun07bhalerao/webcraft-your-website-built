@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProjects } from '@/contexts/ProjectContext';
 import { Monitor, Tablet, Smartphone, ArrowLeft, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LivePreview } from './Editor';
+import { WebsiteTemplate } from '@/templates/TemplateSystem';
 
 const devices = [
   { key: 'desktop', icon: Monitor, width: '100%' },
@@ -47,8 +47,9 @@ const Preview = () => {
           className="bg-card rounded-xl shadow-2xl overflow-hidden transition-all duration-500 border border-border h-fit"
           style={{ width: selectedWidth, maxWidth: '100%' }}
         >
-          <LivePreview
+          <WebsiteTemplate
             type={currentProject.type}
+            templateIndex={currentProject.template || 0}
             content={currentProject.content || {}}
             name={currentProject.name || 'My Website'}
           />

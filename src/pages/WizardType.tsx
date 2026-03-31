@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProjects, WebsiteType } from '@/contexts/ProjectContext';
 import { Briefcase, Palette, GraduationCap, PartyPopper, PenLine, Globe } from 'lucide-react';
+import { useEffect } from 'react';
 
 const types: { key: WebsiteType; label: string; desc: string; icon: any; color: string; gradient: string }[] = [
   { key: 'business', label: 'Business', desc: 'Corporate & professional websites', icon: Briefcase, color: 'border-business/30 hover:border-business', gradient: 'from-business/10 to-business/5' },
@@ -20,8 +21,15 @@ const iconColors: Record<string, string> = {
 
 const WizardType = () => {
   const { id } = useParams<{ id: string }>();
-  const { updateProject, currentProject } = useProjects();
+  const { updateProject, currentProject, projects, setCurrentProject } = useProjects();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id && (!currentProject || currentProject.id !== id)) {
+      const p = projects.find(proj => proj.id === id);
+      if (p) setCurrentProject(p);
+    }
+  }, [id, currentProject, projects, setCurrentProject]);
 
   const select = (type: WebsiteType) => {
     if (!id) return;
@@ -29,7 +37,10 @@ const WizardType = () => {
     navigate(`/wizard/${id}/template`);
   };
 
-  const isSelected = (type: WebsiteType) => currentProject?.type === type;
+  const isSelected = (type: WebsiteType) => {
+    const activeType = currentProject?.id === id ? currentProject.type : projects.find(p => p.id === id)?.type;
+    return activeType === type;
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
