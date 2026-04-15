@@ -2,24 +2,35 @@ import React from 'react';
 import { WebsiteType } from '@/contexts/ProjectContext';
 
 interface TemplateProps {
-  name: string;
+  name: any;
+  logo?: string;
+  pages?: { id: string, name: string, path: string }[];
   content: Record<string, any>;
+  onNavigate?: (pageId: string) => void;
+  onGlobalEdit?: (region: string) => void;
 }
 
-export const EducationTemplate1 = ({ name, content }: TemplateProps) => (
+export const EducationTemplate1 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-full bg-[hsl(170,20%,97%)] text-slate-800">
-    <nav className="bg-[hsl(170,55%,25%)] text-white px-8 py-6 flex items-center justify-between">
-      <span className="font-bold text-2xl">{name}</span>
+    <nav className="bg-[hsl(170,55%,25%)] text-white px-8 py-6 flex items-center justify-between" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-bold text-2xl">{name}</span>}
       <div className="flex gap-8 text-sm font-medium">
-        <span>Courses</span><span>About Us</span><span>Admissions</span><span>Contact</span>
-      </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
       <button className="bg-[hsl(170,55%,42%)] hover:bg-[hsl(170,55%,35%)] px-6 py-2 rounded font-bold transition-colors">Enroll Now</button>
     </nav>
     <div className="bg-[hsl(170,40%,92%)] px-8 py-32 text-center border-b border-[hsl(170,30%,85%)]">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-6xl font-bold text-[hsl(170,55%,20%)] mb-6 leading-tight">{content.home?.headline}</h1>
         <p className="text-[hsl(170,40%,30%)] text-xl mb-10 leading-relaxed">{content.home?.subtext}</p>
-        <button className="bg-[hsl(170,55%,25%)] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[hsl(170,55%,20%)] transition-colors shadow-xl shadow-[hsl(170,55%,25%)]/20">{content.home?.cta}</button>
+        <button className="bg-[hsl(170,55%,25%)] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[hsl(170,55%,20%)] transition-colors shadow-xl shadow-[hsl(170,55%,25%)]/20" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
       </div>
     </div>
     <div className="max-w-7xl mx-auto px-8 py-24">
@@ -51,12 +62,30 @@ export const EducationTemplate1 = ({ name, content }: TemplateProps) => (
         </div>
       </div>
     </div>
-    <footer className="bg-[hsl(170,55%,20%)] text-white/80 px-8 py-16 text-center">
+    <footer className="bg-[hsl(170,55%,20%)] text-white/80 px-8 py-16 text-center" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
       <div className="max-w-4xl mx-auto flex flex-col items-center">
         <h2 className="text-3xl font-bold text-white mb-8">{content.contact?.title}</h2>
         <div className="flex flex-col md:flex-row gap-8 justify-center items-center text-lg mb-12 bg-white/5 p-6 rounded-2xl border border-white/10 w-full">
-           <div className="flex items-center gap-3"><span>📧</span> <span>{content.contact?.email}</span></div>
-           <div className="flex items-center gap-3"><span>📞</span> <span>{content.contact?.phone}</span></div>
+           <div className="flex items-center gap-3">
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
+           <div className="flex items-center gap-3">
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
         </div>
         <div className="w-full h-px bg-white/10 mb-8" />
         <p className="text-sm">© {new Date().getFullYear()} {name}. All rights reserved.</p>
@@ -65,15 +94,20 @@ export const EducationTemplate1 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EducationTemplate2 = ({ name, content }: TemplateProps) => (
+export const EducationTemplate2 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-full bg-slate-50 text-slate-900">
-    <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-      <span className="font-black text-2xl text-[hsl(200,50%,45%)] tracking-tight">{name}</span>
+    <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-2xl text-[hsl(200,50%,45%)] tracking-tight">{name}</span>}
       <div className="flex gap-6 text-sm font-semibold text-slate-600">
-        <span className="hover:text-[hsl(200,50%,45%)] cursor-pointer">Browse</span>
-        <span className="hover:text-[hsl(200,50%,45%)] cursor-pointer">Instructors</span>
-        <span className="hover:text-[hsl(200,50%,45%)] cursor-pointer">Pricing</span>
-      </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-[hsl(200,50%,45%)] cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
       <button className="border-2 border-[hsl(200,50%,45%)] text-[hsl(200,50%,45%)] px-5 py-2 rounded-lg font-bold hover:bg-[hsl(200,50%,45%)] hover:text-white transition-colors">Sign In</button>
     </nav>
     <div className="bg-slate-900 text-white px-8 py-32 overflow-hidden relative">
@@ -82,7 +116,7 @@ export const EducationTemplate2 = ({ name, content }: TemplateProps) => (
         <div>
           <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight mb-6">{content.home?.headline}</h1>
           <p className="text-slate-400 text-xl md:text-2xl leading-relaxed mb-10">{content.home?.subtext}</p>
-          <button className="bg-[hsl(200,50%,50%)] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[hsl(200,50%,45%)] transition-colors shadow-lg shadow-blue-900/50">{content.home?.cta}</button>
+          <button className="bg-[hsl(200,50%,50%)] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[hsl(200,50%,45%)] transition-colors shadow-lg shadow-blue-900/50" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
         </div>
         <div className="grid grid-cols-2 gap-4">
            {['Technology', 'Business', 'Design', 'Marketing'].map((cat, i) => (
@@ -111,14 +145,20 @@ export const EducationTemplate2 = ({ name, content }: TemplateProps) => (
             </div>
             <h4 className="font-bold text-xl mb-2 flex-grow">{s}</h4>
             <div className="flex justify-between items-center text-sm font-semibold text-slate-500 mt-4 pt-4 border-t border-slate-100">
-               <span className="flex items-center gap-1">⏱️ 12h</span>
-               <span className="text-[hsl(200,50%,45%)]">View Course →</span>
-            </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
           </div>
         ))}
       </div>
     </div>
-    <footer className="bg-white border-t border-slate-200 py-16 px-8 text-center text-slate-500">
+    <footer className="bg-white border-t border-slate-200 py-16 px-8 text-center text-slate-500" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
       <div className="mb-8 font-black text-2xl text-slate-900">{name}</div>
       <p className="mb-4 font-medium">{content.contact?.title} • <a href={`mailto:${content.contact?.email}`} className="text-[hsl(200,50%,45%)]">{content.contact?.email}</a></p>
       <p className="text-sm">© {new Date().getFullYear()} {name} Learning Platform</p>
@@ -126,27 +166,32 @@ export const EducationTemplate2 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EducationTemplate3 = ({ name, content }: TemplateProps) => (
+export const EducationTemplate3 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-[#f0f9ff] text-[#0f172a] relative overflow-hidden">
     {/* Decorative background elements */}
     <div className="absolute top-20 left-20 w-32 h-32 rounded-full bg-[#fcd34d]/40 mix-blend-multiply blur-xl animate-pulse" />
     <div className="absolute top-40 right-40 w-48 h-48 rounded-full bg-[#f472b6]/30 mix-blend-multiply blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
     <div className="absolute bottom-40 left-1/2 w-64 h-64 rounded-full bg-[#34d399]/30 mix-blend-multiply blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
     
-    <nav className="bg-[#0ea5e9] text-white px-8 py-5 flex items-center justify-between rounded-b-3xl mx-4 shadow-lg sticky top-0 z-50">
-      <span className="font-black text-2xl bg-white text-[#0ea5e9] px-6 py-2 rounded-full shadow-inner transform -rotate-2 hover:rotate-0 transition-transform cursor-pointer border-4 border-[#0ea5e9] outline outline-4 outline-white">{name}</span>
+    <nav className="bg-[#0ea5e9] text-white px-8 py-5 flex items-center justify-between rounded-b-3xl mx-4 shadow-lg sticky top-0 z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-2xl bg-white text-[#0ea5e9] px-6 py-2 rounded-full shadow-inner transform -rotate-2 hover:rotate-0 transition-transform cursor-pointer border-4 border-[#0ea5e9] outline outline-4 outline-white">{name}</span>}
       <div className="hidden md:flex gap-6 font-bold text-lg">
-        <span className="hover:text-[#fef08a] transition-colors cursor-pointer">Play</span>
-        <span className="hover:text-[#fef08a] transition-colors cursor-pointer">Learn</span>
-        <span className="hover:text-[#fef08a] transition-colors cursor-pointer">Parents</span>
-      </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-[#fef08a] transition-colors cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
       <button className="bg-[#facc15] text-[#854d0e] px-8 py-3 rounded-full font-black text-lg shadow-[0_4px_0_#ca8a04] hover:translate-y-1 hover:shadow-none transition-all">Join Fun!</button>
     </nav>
     
     <div className="max-w-6xl mx-auto px-8 py-24 text-center relative z-10">
       <h1 className="text-6xl md:text-[5rem] font-black text-[#0284c7] mb-8 leading-[1.1] drop-shadow-sm transform -rotate-1">{content.home?.headline}</h1>
       <p className="text-2xl md:text-3xl text-[#334155] font-semibold max-w-3xl mx-auto leading-relaxed mb-12 bg-white/50 backdrop-blur-sm p-6 rounded-3xl border-2 border-white">{content.home?.subtext}</p>
-      <button className="bg-[#ef4444] text-white text-2xl px-12 py-5 rounded-full font-black shadow-[0_6px_0_#b91c1c] hover:translate-y-1 hover:shadow-[0_2px_0_#b91c1c] transition-all transform hover:scale-105 active:scale-95">{content.home?.cta}</button>
+      <button className="bg-[#ef4444] text-white text-2xl px-12 py-5 rounded-full font-black shadow-[0_6px_0_#b91c1c] hover:translate-y-1 hover:shadow-[0_2px_0_#b91c1c] transition-all transform hover:scale-105 active:scale-95" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
     </div>
     
     <div className="bg-white/80 backdrop-blur-md py-24 px-8 mt-12 rounded-[3rem] mx-4 shadow-xl border-4 border-white relative z-10 mb-20">
@@ -185,7 +230,7 @@ export const EducationTemplate3 = ({ name, content }: TemplateProps) => (
       </div>
     </div>
     
-    <footer className="bg-[#0f172a] text-white pt-20 pb-10 px-8 rounded-t-[3rem] text-center relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+    <footer className="bg-[#0f172a] text-white pt-20 pb-10 px-8 rounded-t-[3rem] text-center relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <div className="max-w-4xl mx-auto flex flex-col items-center">
          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-8 border-8 border-[#38bdf8] text-4xl">🚀</div>
          <h2 className="text-4xl font-black mb-4 text-[#38bdf8]">{content.contact?.title}</h2>
@@ -196,9 +241,9 @@ export const EducationTemplate3 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EducationTemplate4 = ({ name, content }: TemplateProps) => (
+export const EducationTemplate4 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-serif min-h-screen bg-[#f8f7f5] text-[#1e3a8a]">
-    <header className="border-b-4 border-[#1e3a8a] bg-white px-8 py-10 text-center relative">
+    <header className="border-b-4 border-[#1e3a8a] bg-white px-8 py-10 text-center relative" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <div className="absolute top-1/2 left-8 -translate-y-1/2 hidden md:block w-32 h-px bg-[#1e3a8a]/20" />
        <div className="absolute top-1/2 right-8 -translate-y-1/2 hidden md:block w-32 h-px bg-[#1e3a8a]/20" />
        <div className="inline-block border border-[#1e3a8a]/30 p-4 bg-white relative z-10">
@@ -209,18 +254,23 @@ export const EducationTemplate4 = ({ name, content }: TemplateProps) => (
        </div>
     </header>
     
-    <nav className="bg-[#1e3a8a] text-white py-4 px-8 sticky top-0 z-50 shadow-md">
+    <nav className="bg-[#1e3a8a] text-white py-4 px-8 sticky top-0 z-50 shadow-md" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <div className="max-w-6xl mx-auto flex justify-center gap-8 md:gap-16 text-sm font-sans uppercase tracking-widest font-bold">
-         <span className="hover:text-amber-400 cursor-pointer transition-colors">Academics</span>
-         <span className="hover:text-amber-400 cursor-pointer transition-colors">Admissions</span>
-         <span className="hover:text-amber-400 cursor-pointer transition-colors">Campus Life</span>
-       </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-amber-400 cursor-pointer transition-colors cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
     </nav>
 
     <div className="px-8 py-24 max-w-5xl mx-auto text-center">
        <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight tracking-tight text-[#0f172a]">{content.home?.headline}</h1>
        <p className="font-sans text-xl md:text-2xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed mb-12">{content.home?.subtext}</p>
-       <button className="bg-amber-600 text-white font-sans uppercase tracking-widest font-bold text-sm px-10 py-5 hover:bg-[#1e3a8a] transition-colors">{content.home?.cta}</button>
+       <button className="bg-amber-600 text-white font-sans uppercase tracking-widest font-bold text-sm px-10 py-5 hover:bg-[#1e3a8a] transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
     </div>
 
     <div className="bg-white border-y border-gray-200">
@@ -253,7 +303,7 @@ export const EducationTemplate4 = ({ name, content }: TemplateProps) => (
        </div>
     </div>
 
-    <footer className="bg-[#0f172a] text-white pt-24 pb-12 px-8">
+    <footer className="bg-[#0f172a] text-white pt-24 pb-12 px-8" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-16 mb-24 border-b border-gray-800 pb-24">
           <div>
              <h2 className="font-bold text-2xl uppercase tracking-widest mb-8 text-amber-500">{name}</h2>
@@ -282,15 +332,20 @@ export const EducationTemplate4 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EducationTemplate5 = ({ name, content }: TemplateProps) => (
+export const EducationTemplate5 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-mono min-h-screen bg-[#0a0a0a] text-white selection:bg-[#a3e635] selection:text-black">
-    <nav className="p-6 md:p-8 flex items-center justify-between border-b border-[#262626] sticky top-0 bg-[#0a0a0a]/90 backdrop-blur z-50">
-       <span className="font-black text-xl md:text-2xl text-[#a3e635] tracking-tighter uppercase">{name}</span>
+    <nav className="p-6 md:p-8 flex items-center justify-between border-b border-[#262626] sticky top-0 bg-[#0a0a0a]/90 backdrop-blur z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+       {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-xl md:text-2xl text-[#a3e635] tracking-tighter uppercase">{name}</span>}
        <div className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-gray-400">
-         <span className="hover:text-white cursor-pointer">[ Curriculum ]</span>
-         <span className="hover:text-white cursor-pointer">[ Mentors ]</span>
-         <span className="hover:text-white cursor-pointer">[ FAQ ]</span>
-       </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-white cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
        <button className="bg-[#a3e635] text-black px-6 py-2 text-xs font-black uppercase hover:bg-white transition-colors duration-300">Apply_Now</button>
     </nav>
     
@@ -300,7 +355,7 @@ export const EducationTemplate5 = ({ name, content }: TemplateProps) => (
              <div className="text-xs font-bold text-[#a3e635] mb-8 uppercase tracking-[0.2em]">{'>'} init bootcamp</div>
              <h1 className="text-6xl md:text-8xl font-black leading-[0.8] uppercase tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-500">{content.home?.headline}</h1>
              <p className="text-xl text-gray-400 font-sans leading-relaxed mb-12">{content.home?.subtext}</p>
-             <button className="border border-[#a3e635] text-[#a3e635] hover:bg-[#a3e635] hover:text-black px-8 py-4 font-bold uppercase tracking-widest text-sm transition-all self-start">{content.home?.cta}</button>
+             <button className="border border-[#a3e635] text-[#a3e635] hover:bg-[#a3e635] hover:text-black px-8 py-4 font-bold uppercase tracking-widest text-sm transition-all self-start" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
           </div>
           <div className="bg-[#111] p-8 md:p-16 flex flex-col justify-center relative overflow-hidden">
              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#a3e635] via-transparent to-transparent" />
@@ -311,7 +366,15 @@ export const EducationTemplate5 = ({ name, content }: TemplateProps) => (
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                </div>
                <div className="text-sm text-gray-500 leading-loose">
-                  <span className="text-blue-400">import</span> {'{'} Future {'}'} <span className="text-blue-400">from</span> <span className="text-green-400">'./{name.toLowerCase()}'</span>;<br/><br/>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="text-blue-400 cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))};<br/><br/>
                   <span className="text-purple-400">async function</span> <span className="text-yellow-200">transformCareer</span>() {'{'}<br/>
                   &nbsp;&nbsp;<span className="text-pink-500">await</span> Student.<span className="text-yellow-200">learn</span>(['HTML', 'CSS', 'JS', 'React']);<br/>
                   &nbsp;&nbsp;<span className="text-pink-500">return</span> <span className="text-green-400">'Hired'</span>;<br/>
@@ -348,7 +411,7 @@ export const EducationTemplate5 = ({ name, content }: TemplateProps) => (
        </div>
     </div>
 
-    <footer className="border-t border-[#262626] bg-[#111] px-8 py-16 text-center mt-20">
+    <footer className="border-t border-[#262626] bg-[#111] px-8 py-16 text-center mt-20" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <h2 className="text-3xl font-black uppercase tracking-tighter mb-8">{content.contact?.title}</h2>
        <div className="flex justify-center gap-8 text-sm font-bold uppercase tracking-widest mb-16">
           <a href={`mailto:${content.contact?.email}`} className="text-[#a3e635] hover:text-white transition-colors border-b border-transparent hover:border-white pb-1">{content.contact?.email}</a>

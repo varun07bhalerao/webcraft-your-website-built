@@ -17,8 +17,12 @@ const Preview = () => {
   const navigate = useNavigate();
   const [device, setDevice] = useState<string>('desktop');
   const selectedWidth = devices.find(d => d.key === device)?.width || '100%';
+  const [activePageId, setActivePageId] = useState<string | null>(null);
 
   if (!currentProject) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">No project loaded</div>;
+
+  const pages = currentProject.pages || [];
+  const activePage = pages.find(p => p.id === activePageId) || pages[0];
 
   return (
     <div className="h-screen flex flex-col bg-muted/30">
@@ -44,14 +48,17 @@ const Preview = () => {
       </header>
       <div className="flex-1 overflow-auto flex justify-center p-6">
         <div
-          className="bg-card rounded-xl shadow-2xl overflow-hidden transition-all duration-500 border border-border h-fit"
+          className="bg-card rounded-xl shadow-2xl overflow-hidden transition-all duration-500 border border-border h-fit min-h-[80vh] w-full"
           style={{ width: selectedWidth, maxWidth: '100%' }}
         >
           <WebsiteTemplate
             type={currentProject.type}
             templateIndex={currentProject.template || 0}
-            content={currentProject.content || {}}
+            content={activePage?.content || {}}
             name={currentProject.name || 'My Website'}
+            logo={currentProject.logo}
+            pages={pages}
+            onNavigate={(id) => setActivePageId(id)}
           />
         </div>
       </div>

@@ -6,6 +6,15 @@ import { useAuth } from './AuthContext';
 
 export type WebsiteType = 'business' | 'portfolio' | 'education' | 'event' | 'blog';
 
+export interface WebsitePage {
+  id: string;
+  name: string;
+  path: string;
+  templateType: string;
+  content: Record<string, any>;
+  links?: Record<string, string>;
+}
+
 export interface WebsiteProject {
   id: string;
   name: string;
@@ -16,7 +25,8 @@ export interface WebsiteProject {
   phone?: string;
   address?: string;
   createdAt: string;
-  content: Record<string, any>;
+  content?: Record<string, any>; // Deprecated
+  pages: WebsitePage[];
 }
 
 interface ProjectContextType {
@@ -48,7 +58,21 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
           const q = query(collection(db, `users/${user.uid}/projects`));
           const snap = await getDocs(q);
           const loaded: WebsiteProject[] = [];
-          snap.forEach((d) => loaded.push(d.data() as WebsiteProject));
+          snap.forEach((d) => {
+            const data = d.data() as WebsiteProject;
+            if (!data.pages || data.pages.length === 0) {
+              data.pages = [
+                {
+                  id: crypto.randomUUID(),
+                  name: 'Home',
+                  path: '/',
+                  templateType: 'home',
+                  content: data.content || {}
+                }
+              ];
+            }
+            loaded.push(data);
+          });
           setProjects(loaded);
         } catch (err) {
           console.error("Error fetching projects:", err);
@@ -88,6 +112,15 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       template: 0,
       createdAt: new Date().toISOString(), 
       content: {},
+      pages: [
+        {
+          id: crypto.randomUUID(),
+          name: 'Home',
+          path: '/',
+          templateType: 'home',
+          content: {}
+        }
+      ],
       ...(initialData || {})
     };
     setProjects(prev => [...prev, p]);

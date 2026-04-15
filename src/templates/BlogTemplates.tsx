@@ -2,19 +2,28 @@ import React from 'react';
 import { WebsiteType } from '@/contexts/ProjectContext';
 
 interface TemplateProps {
-  name: string;
+  name: any;
+  logo?: string;
+  pages?: { id: string, name: string, path: string }[];
   content: Record<string, any>;
+  onNavigate?: (pageId: string) => void;
+  onGlobalEdit?: (region: string) => void;
 }
 
-export const BlogTemplate1 = ({ name, content }: TemplateProps) => (
+export const BlogTemplate1 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-[#faf9f6] text-[#2c2c2c]">
-     <nav className="border-b border-gray-200 px-8 lg:px-24 py-6 flex items-center justify-between sticky top-0 bg-[#faf9f6]/95 backdrop-blur z-50">
-        <span className="font-serif font-bold text-2xl tracking-tight">{name}</span>
+     <nav className="border-b border-gray-200 px-8 lg:px-24 py-6 flex items-center justify-between sticky top-0 bg-[#faf9f6]/95 backdrop-blur z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+        {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-serif font-bold text-2xl tracking-tight">{name}</span>}
         <div className="hidden md:flex gap-8 text-sm text-gray-500 uppercase tracking-widest font-semibold">
-           <span className="hover:text-black cursor-pointer transition-colors">Stories</span>
-           <span className="hover:text-black cursor-pointer transition-colors">Essays</span>
-           <span className="hover:text-black cursor-pointer transition-colors">Interviews</span>
-        </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-black cursor-pointer transition-colors cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
         <button className="text-xs uppercase tracking-widest font-bold border-b-2 border-transparent hover:border-black pb-1 transition-colors">Subscribe</button>
      </nav>
 
@@ -23,7 +32,7 @@ export const BlogTemplate1 = ({ name, content }: TemplateProps) => (
            <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#d97706] mb-8">Featured Story</div>
            <h1 className="font-serif text-5xl md:text-7xl font-bold leading-[1.1] mb-8 tracking-tight">{content.home?.headline}</h1>
            <p className="text-xl md:text-2xl text-gray-500 font-light leading-relaxed max-w-2xl mx-auto mb-12">{content.home?.subtext}</p>
-           <button className="bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors">{content.home?.cta}</button>
+           <button className="bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
         </article>
 
         <section className="mb-24">
@@ -55,7 +64,7 @@ export const BlogTemplate1 = ({ name, content }: TemplateProps) => (
         </section>
      </main>
 
-     <footer className="bg-black text-white px-8 lg:px-24 py-20 flex flex-col md:flex-row justify-between items-start md:items-center">
+     <footer className="bg-black text-white px-8 lg:px-24 py-20 flex flex-col md:flex-row justify-between items-start md:items-center" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <div className="mb-12 md:mb-0">
            <h2 className="font-serif text-3xl font-bold tracking-tight mb-4">{name}</h2>
            <p className="text-sm text-gray-400 max-w-xs">{content.contact?.title} — independent publishing for the modern era.</p>
@@ -68,16 +77,21 @@ export const BlogTemplate1 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const BlogTemplate2 = ({ name, content }: TemplateProps) => (
+export const BlogTemplate2 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-slate-50 text-slate-800">
-     <nav className="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between shadow-sm sticky top-0 z-50">
-        <span className="font-black text-2xl tracking-tighter text-slate-900">{name}</span>
+     <nav className="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between shadow-sm sticky top-0 z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+        {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-2xl tracking-tighter text-slate-900">{name}</span>}
         <div className="hidden md:flex gap-6 text-sm font-bold text-slate-500 uppercase tracking-widest">
-           <span className="cursor-pointer hover:text-slate-900 border-b-2 border-transparent hover:border-slate-900 pb-1">Latest</span>
-           <span className="cursor-pointer hover:text-slate-900 border-b-2 border-transparent hover:border-slate-900 pb-1">Topics</span>
-           <span className="cursor-pointer hover:text-slate-900 border-b-2 border-transparent hover:border-slate-900 pb-1">Authors</span>
-        </div>
-        <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-full text-sm font-bold transition-colors">{content.home?.cta}</button>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="cursor-pointer hover:text-slate-900 border-b-2 border-transparent hover:border-slate-900 pb-1 cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
+        <button className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-full text-sm font-bold transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
      </nav>
 
      <div className="max-w-7xl mx-auto px-8 py-12">
@@ -133,15 +147,21 @@ export const BlogTemplate2 = ({ name, content }: TemplateProps) => (
                  <div className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">Topic {i+1}</div>
                  <h3 className="text-xl font-bold leading-snug mb-4 group-hover:text-blue-600 transition-colors">{s}</h3>
                  <div className="text-xs font-semibold text-slate-400 flex items-center justify-between border-t border-slate-100 pt-4">
-                    <span>Oct 24, 2026</span>
-                    <span>3 min read</span>
-                 </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
               </article>
            ))}
         </div>
      </div>
 
-     <footer className="bg-slate-900 text-slate-400 py-16 px-8 text-center text-sm border-t-8 border-slate-800">
+     <footer className="bg-slate-900 text-slate-400 py-16 px-8 text-center text-sm border-t-8 border-slate-800" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <h2 className="font-black text-2xl text-white mb-2">{name}</h2>
         <p className="mb-10 font-medium">Digital Magazine</p>
         <div className="flex justify-center gap-6 mb-12 border-y border-slate-800 py-6 max-w-md mx-auto">
@@ -153,7 +173,7 @@ export const BlogTemplate2 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const BlogTemplate3 = ({ name, content }: TemplateProps) => (
+export const BlogTemplate3 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-serif min-h-screen bg-[#fdf8f5] text-[#5c4a43]">
      <div className="py-12 md:py-20 text-center">
         <div className="w-24 h-24 rounded-full bg-[#e8dbce] mx-auto mb-8 flex items-center justify-center text-4xl shadow-inner border-4 border-white">
@@ -163,11 +183,17 @@ export const BlogTemplate3 = ({ name, content }: TemplateProps) => (
         <p className="font-sans text-xs uppercase tracking-[0.3em] font-bold text-[#b5a396]">Personal Thoughts & Reflections</p>
      </div>
      
-     <nav className="border-y border-[#e8dbce] max-w-3xl mx-auto flex justify-center py-4 gap-8 md:gap-16 font-sans text-xs uppercase tracking-widest font-bold text-[#b5a396] sticky top-0 bg-[#fdf8f5] z-50">
-        <span className="hover:text-[#5c4a43] cursor-pointer">Archive</span>
-        <span className="hover:text-[#5c4a43] cursor-pointer">About Me</span>
-        <span className="hover:text-[#5c4a43] cursor-pointer">Connect</span>
-     </nav>
+     <nav className="border-y border-[#e8dbce] max-w-3xl mx-auto flex justify-center py-4 gap-8 md:gap-16 font-sans text-xs uppercase tracking-widest font-bold text-[#b5a396] sticky top-0 bg-[#fdf8f5] z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-[#5c4a43] cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}
+</nav>
 
      <main className="max-w-2xl mx-auto px-8 py-20 pb-0">
         <article className="mb-32">
@@ -195,7 +221,7 @@ export const BlogTemplate3 = ({ name, content }: TemplateProps) => (
            </div>
            
            <div className="mt-16 text-center">
-              <button className="bg-transparent border border-[#b5a396] text-[#b5a396] px-8 py-3 font-sans text-xs uppercase tracking-widest hover:bg-[#b5a396] hover:text-white transition-colors">{content.home?.cta}</button>
+              <button className="bg-transparent border border-[#b5a396] text-[#b5a396] px-8 py-3 font-sans text-xs uppercase tracking-widest hover:bg-[#b5a396] hover:text-white transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
            </div>
         </article>
      </main>
@@ -220,21 +246,27 @@ export const BlogTemplate3 = ({ name, content }: TemplateProps) => (
         </div>
      </div>
 
-     <footer className="text-center py-20 px-8">
+     <footer className="text-center py-20 px-8" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <h2 className="text-2xl mb-8 text-[#5c4a43]">{content.contact?.title}</h2>
         <div className="font-sans text-sm tracking-widest text-[#8c7a6e] flex flex-col gap-4">
-           <span>{content.contact?.email}</span>
-           <span>{content.contact?.phone}</span>
-        </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
         <div className="mt-16 w-16 h-px bg-[#e8dbce] mx-auto mb-8" />
         <div className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-[#b5a396]">© {new Date().getFullYear()} {name}</div>
      </footer>
   </div>
 );
 
-export const BlogTemplate4 = ({ name, content }: TemplateProps) => (
+export const BlogTemplate4 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-white text-black border-8 md:border-[16px] border-black pb-0 relative">
-     <header className="border-b-4 border-black border-double pt-8 pb-4 px-4 md:px-8 bg-white sticky top-0 z-50">
+     <header className="border-b-4 border-black border-double pt-8 pb-4 px-4 md:px-8 bg-white sticky top-0 z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <div className="flex justify-between items-center mb-6">
            <div className="font-bold text-xs uppercase tracking-widest hidden md:block">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</div>
            <div className="bg-black text-white px-3 py-1 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -245,13 +277,17 @@ export const BlogTemplate4 = ({ name, content }: TemplateProps) => (
         <h1 className="text-5xl md:text-8xl font-black text-center tracking-tighter uppercase leading-[0.8]">{name}</h1>
      </header>
 
-     <nav className="border-b-4 border-black px-4 md:px-8 py-3 bg-white flex overflow-x-auto gap-8 sm:gap-12 text-sm font-bold uppercase tracking-widest hide-scrollbar">
-        <span className="shrink-0 hover:bg-black hover:text-white px-2 transition-colors cursor-pointer">Top Stories</span>
-        <span className="shrink-0 hover:bg-black hover:text-white px-2 transition-colors cursor-pointer">Politics</span>
-        <span className="shrink-0 hover:bg-black hover:text-white px-2 transition-colors cursor-pointer">Business</span>
-        <span className="shrink-0 hover:bg-black hover:text-white px-2 transition-colors cursor-pointer">Tech</span>
-        <span className="shrink-0 hover:bg-black hover:text-white px-2 transition-colors cursor-pointer">Culture</span>
-     </nav>
+     <nav className="border-b-4 border-black px-4 md:px-8 py-3 bg-white flex overflow-x-auto gap-8 sm:gap-12 text-sm font-bold uppercase tracking-widest hide-scrollbar" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="shrink-0 hover:bg-black hover:text-white px-2 transition-colors cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}
+</nav>
 
      <main className="p-4 md:p-8">
         <div className="grid lg:grid-cols-4 gap-8 md:gap-12 mb-12 border-b border-black pb-12">
@@ -293,7 +329,7 @@ export const BlogTemplate4 = ({ name, content }: TemplateProps) => (
         </section>
      </main>
 
-     <footer className="border-t-4 border-black p-8 md:p-12 text-center bg-black text-white relative flex flex-col justify-end min-h-[400px]">
+     <footer className="border-t-4 border-black p-8 md:p-12 text-center bg-black text-white relative flex flex-col justify-end min-h-[400px]" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase mb-2 opacity-5 absolute top-12 left-0 right-0">{name}</h2>
         <div className="relative z-10 grid md:grid-cols-2 gap-12 max-w-4xl mx-auto w-full border-t border-gray-800 pt-12">
            <div className="text-left">
@@ -317,16 +353,16 @@ export const BlogTemplate4 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const BlogTemplate5 = ({ name, content }: TemplateProps) => (
+export const BlogTemplate5 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-[#111] text-white overflow-hidden relative">
      <div className="absolute inset-0 z-0">
         <div className="w-full h-full bg-zinc-900 object-cover opacity-60 mix-blend-luminosity scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/80" />
      </div>
 
-     <nav className="relative z-20 px-8 py-8 flex items-center justify-between mix-blend-difference">
-        <span className="font-bold text-xl uppercase tracking-[0.3em] font-serif italic">{name}</span>
-        <button className="text-xs uppercase tracking-[0.2em] font-bold border border-white/30 hover:bg-white hover:text-black px-6 py-2 transition-colors">{content.home?.cta}</button>
+     <nav className="relative z-20 px-8 py-8 flex items-center justify-between mix-blend-difference" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+        {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-bold text-xl uppercase tracking-[0.3em] font-serif italic">{name}</span>}
+        <button className="text-xs uppercase tracking-[0.2em] font-bold border border-white/30 hover:bg-white hover:text-black px-6 py-2 transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
      </nav>
 
      <main className="relative z-10 min-h-[80vh] flex flex-col justify-end px-8 md:px-20 pb-20 pt-32">
@@ -373,7 +409,7 @@ export const BlogTemplate5 = ({ name, content }: TemplateProps) => (
         </div>
      </div>
 
-     <footer className="relative z-10 border-t border-white/10 px-8 py-20 bg-black flex flex-col items-center text-center">
+     <footer className="relative z-10 border-t border-white/10 px-8 py-20 bg-black flex flex-col items-center text-center" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <h2 className="font-serif italic text-4xl mb-12">{content.contact?.title}</h2>
         <div className="flex flex-col md:flex-row gap-12 font-bold text-xs uppercase tracking-[0.3em] text-zinc-500 mb-20">
            <a href={`mailto:${content.contact?.email}`} className="hover:text-white transition-colors border-b border-transparent hover:border-white pb-2">{content.contact?.email}</a>

@@ -2,20 +2,29 @@ import React from 'react';
 import { WebsiteType } from '@/contexts/ProjectContext';
 
 interface TemplateProps {
-  name: string;
+  name: any;
+  logo?: string;
+  pages?: { id: string, name: string, path: string }[];
   content: Record<string, any>;
+  onNavigate?: (pageId: string) => void;
+  onGlobalEdit?: (region: string) => void;
 }
 
-export const EventTemplate1 = ({ name, content }: TemplateProps) => (
+export const EventTemplate1 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-[hsl(280,30%,8%)] text-white">
-    <nav className="px-8 py-6 flex items-center justify-between border-b border-white/10 sticky top-0 bg-[hsl(280,30%,8%)]/80 backdrop-blur-md z-50">
-      <span className="font-black text-2xl tracking-[0.2em] bg-clip-text text-transparent bg-gradient-to-r from-[hsl(280,65%,55%)] to-[hsl(320,65%,55%)]">{name}</span>
+    <nav className="px-8 py-6 flex items-center justify-between border-b border-white/10 sticky top-0 bg-[hsl(280,30%,8%)]/80 backdrop-blur-md z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-2xl tracking-[0.2em] bg-clip-text text-transparent bg-gradient-to-r from-[hsl(280,65%,55%)] to-[hsl(320,65%,55%)]">{name}</span>}
       <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-widest opacity-80">
-        <span className="hover:text-[hsl(280,65%,55%)] cursor-pointer transition-colors">Lineup</span>
-        <span className="hover:text-[hsl(280,65%,55%)] cursor-pointer transition-colors">Tickets</span>
-        <span className="hover:text-[hsl(280,65%,55%)] cursor-pointer transition-colors">Info</span>
-      </div>
-      <button className="bg-gradient-to-r from-[hsl(280,65%,55%)] to-[hsl(320,65%,55%)] px-6 py-2 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform">{content.home?.cta}</button>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-[hsl(280,65%,55%)] cursor-pointer transition-colors cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
+      <button className="bg-gradient-to-r from-[hsl(280,65%,55%)] to-[hsl(320,65%,55%)] px-6 py-2 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
     </nav>
 
     <div className="relative overflow-hidden py-32 px-8 flex flex-col items-center justify-center min-h-[80vh] text-center">
@@ -77,7 +86,7 @@ export const EventTemplate1 = ({ name, content }: TemplateProps) => (
        </div>
     </div>
 
-    <footer className="bg-black text-center pt-32 pb-16 px-8 relative z-10 border-t border-white/10">
+    <footer className="bg-black text-center pt-32 pb-16 px-8 relative z-10 border-t border-white/10" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <h2 className="text-4xl font-black uppercase tracking-[0.5em] mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{name}</h2>
        <div className="flex flex-col items-center gap-6 mb-16">
           <div className="text-3xl font-bold uppercase">{content.contact?.title}</div>
@@ -94,19 +103,24 @@ export const EventTemplate1 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EventTemplate2 = ({ name, content }: TemplateProps) => (
+export const EventTemplate2 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-slate-50 text-slate-800">
-    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-5 flex items-center justify-between sticky top-0 z-50 shadow-md">
+    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-5 flex items-center justify-between sticky top-0 z-50 shadow-md" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <span className="font-black text-2xl tracking-tighter flex items-center gap-2">
          <div className="w-8 h-8 rounded bg-white/20 flex items-center justify-center font-serif italic text-xl">C</div>
          {name}
        </span>
        <div className="hidden md:flex gap-8 text-sm font-bold uppercase tracking-widest text-white/80">
-         <span className="hover:text-white cursor-pointer transition-colors">Speakers</span>
-         <span className="hover:text-white cursor-pointer transition-colors">Schedule</span>
-         <span className="hover:text-white cursor-pointer transition-colors">Venue</span>
-       </div>
-       <button className="bg-white text-indigo-700 px-6 py-2 rounded font-black uppercase text-sm hover:shadow-lg transition-transform hover:-translate-y-0.5">{content.home?.cta}</button>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-white cursor-pointer transition-colors cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
+       <button className="bg-white text-indigo-700 px-6 py-2 rounded font-black uppercase text-sm hover:shadow-lg transition-transform hover:-translate-y-0.5" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
     </nav>
     
     <div className="px-8 py-24 md:py-32 bg-white border-b border-slate-200 flex flex-col items-center text-center relative overflow-hidden">
@@ -181,7 +195,7 @@ export const EventTemplate2 = ({ name, content }: TemplateProps) => (
        </div>
     </div>
 
-    <footer className="bg-white py-16 px-8 text-center text-slate-500">
+    <footer className="bg-white py-16 px-8 text-center text-slate-500" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <h2 className="font-black text-3xl text-slate-900 mb-8">{content.contact?.title}</h2>
        <div className="flex justify-center items-center gap-6 mb-12">
           <div className="bg-slate-50 px-6 py-3 rounded-full border border-slate-200 font-medium">📬 {content.contact?.email}</div>
@@ -193,9 +207,9 @@ export const EventTemplate2 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EventTemplate3 = ({ name, content }: TemplateProps) => (
+export const EventTemplate3 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-serif min-h-screen bg-[#fdfbf7] text-[#4a4a4a]">
-    <nav className="p-8 text-center flex flex-col items-center">
+    <nav className="p-8 text-center flex flex-col items-center" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <h1 className="text-3xl italic text-[#c3a995] mb-2">{name}</h1>
        <div className="w-12 h-px bg-[#c3a995]" />
     </nav>
@@ -209,7 +223,7 @@ export const EventTemplate3 = ({ name, content }: TemplateProps) => (
        <h1 className="text-5xl md:text-7xl mb-8 text-[#5a504b] leading-tight px-4">{content.home?.headline}</h1>
        <p className="text-xl md:text-2xl text-[#8c8c8c] italic mb-12 max-w-2xl mx-auto">{content.home?.subtext}</p>
        
-       <button className="bg-[#c3a995] text-white px-10 py-4 font-sans text-xs uppercase tracking-[0.2em] hover:bg-[#a68c76] transition-colors rounded-sm">{content.home?.cta}</button>
+       <button className="bg-[#c3a995] text-white px-10 py-4 font-sans text-xs uppercase tracking-[0.2em] hover:bg-[#a68c76] transition-colors rounded-sm" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
     </div>
 
     <div className="max-w-4xl mx-auto px-8 py-24 text-center">
@@ -238,7 +252,7 @@ export const EventTemplate3 = ({ name, content }: TemplateProps) => (
        </div>
     </div>
 
-    <footer className="py-24 px-8 text-center bg-[#f7f2ed]">
+    <footer className="py-24 px-8 text-center bg-[#f7f2ed]" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <div className="w-16 h-16 rounded-full border border-[#c3a995] mx-auto mb-8 flex items-center justify-center text-xl italic text-[#c3a995]">RSVP</div>
        <h2 className="text-3xl text-[#5a504b] mb-8">{content.contact?.title}</h2>
        <div className="font-sans text-sm text-[#8c8c8c] tracking-widest uppercase space-y-4 mb-16">
@@ -250,16 +264,21 @@ export const EventTemplate3 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EventTemplate4 = ({ name, content }: TemplateProps) => (
+export const EventTemplate4 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-[#f0fdf4] text-[#14532d]">
-     <nav className="bg-[#16a34a] text-white px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
-        <span className="font-black text-2xl tracking-tight">{name}</span>
+     <nav className="bg-[#16a34a] text-white px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-md" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+        {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-2xl tracking-tight">{name}</span>}
         <div className="hidden md:flex gap-6 font-bold text-sm bg-white/10 px-6 py-2 rounded-full">
-           <span className="hover:text-green-200 cursor-pointer">About</span>
-           <span className="hover:text-green-200 cursor-pointer">Agenda</span>
-           <span className="hover:text-green-200 cursor-pointer">Location</span>
-        </div>
-        <button className="bg-white text-[#16a34a] px-5 py-2 rounded-full font-black text-sm uppercase tracking-wider">{content.home?.cta}</button>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-green-200 cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
+        <button className="bg-white text-[#16a34a] px-5 py-2 rounded-full font-black text-sm uppercase tracking-wider" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
      </nav>
 
      <div className="px-6 py-16 md:py-32 flex flex-col items-center text-center">
@@ -295,7 +314,7 @@ export const EventTemplate4 = ({ name, content }: TemplateProps) => (
         </div>
      </div>
 
-     <footer className="bg-white border-t border-[#dcfce7] pt-20 pb-12 px-6 text-center mt-32">
+     <footer className="bg-white border-t border-[#dcfce7] pt-20 pb-12 px-6 text-center mt-32" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <div className="w-20 h-20 bg-[#dcfce7] rounded-full mx-auto mb-8 flex items-center justify-center text-3xl pb-1">📍</div>
         <h2 className="text-3xl font-black mb-4 text-[#14532d]">{content.contact?.title}</h2>
         <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 mb-16">
@@ -309,18 +328,24 @@ export const EventTemplate4 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const EventTemplate5 = ({ name, content }: TemplateProps) => (
+export const EventTemplate5 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-[#f8f9fa] text-[#212529]">
-     <nav className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50">
+     <nav className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-50" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <span className="font-bold text-xl tracking-tight flex items-center gap-2">
            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
            {name}
         </span>
         <div className="hidden md:flex gap-4 text-sm font-semibold text-gray-500 bg-gray-100 p-1 rounded-lg">
-           <span className="bg-white px-4 py-1.5 rounded-md shadow-sm text-gray-900 cursor-pointer">Overview</span>
-           <span className="px-4 py-1.5 rounded-md hover:text-gray-900 cursor-pointer">Presenters</span>
-        </div>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded shadow text-sm font-bold transition-colors">{content.home?.cta}</button>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="bg-white px-4 py-1.5 rounded-md shadow-sm text-gray-900 cursor-pointer cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded shadow text-sm font-bold transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
      </nav>
 
      <div className="px-8 py-20 bg-white border-b border-gray-200">
@@ -386,7 +411,7 @@ export const EventTemplate5 = ({ name, content }: TemplateProps) => (
         </div>
      </div>
 
-     <footer className="bg-gray-900 text-gray-400 py-12 px-8 text-center text-sm border-t-4 border-blue-600">
+     <footer className="bg-gray-900 text-gray-400 py-12 px-8 text-center text-sm border-t-4 border-blue-600" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         <p className="font-bold text-white mb-2">{name} Webinar Platform</p>
         <p>© {new Date().getFullYear()} All rights reserved. Video content is recorded for quality purposes.</p>
      </footer>

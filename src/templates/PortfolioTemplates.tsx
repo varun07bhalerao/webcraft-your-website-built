@@ -2,15 +2,28 @@ import React from 'react';
 import { WebsiteType } from '@/contexts/ProjectContext';
 
 interface TemplateProps {
-  name: string;
+  name: any;
+  logo?: string;
+  pages?: { id: string, name: string, path: string }[];
   content: Record<string, any>;
+  onNavigate?: (pageId: string) => void;
+  onGlobalEdit?: (region: string) => void;
 }
 
-export const PortfolioTemplate1 = ({ name, content }: TemplateProps) => (
+export const PortfolioTemplate1 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-full bg-[hsl(0,0%,5%)] text-white">
-    <nav className="px-8 py-6 flex items-center justify-between border-b border-white/10">
-      <span className="font-bold text-xl tracking-widest">{name}</span>
-      <div className="flex gap-8 text-sm opacity-60"><span>Work</span><span>About</span><span>Contact</span></div>
+    <nav className="px-8 py-6 flex items-center justify-between border-b border-white/10" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-bold text-xl tracking-widest">{name}</span>}
+      <div className="flex gap-8 text-sm opacity-60">
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
     </nav>
     <div className="px-8 py-32">
       <h1 className="text-7xl font-bold leading-none tracking-tighter hover:text-[hsl(330,65%,50%)] transition-colors duration-500">{content.home?.headline}</h1>
@@ -34,29 +47,42 @@ export const PortfolioTemplate1 = ({ name, content }: TemplateProps) => (
        <h2 className="text-4xl font-bold mb-8">{content.about?.title}</h2>
        <p className="text-xl opacity-60 max-w-3xl leading-relaxed">{content.about?.text}</p>
     </div>
-    <footer className="px-8 py-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
-       <span className="text-2xl font-bold tracking-widest">{name}</span>
+    <footer className="px-8 py-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center opacity-40 hover:opacity-100 transition-opacity" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+       {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="text-2xl font-bold tracking-widest">{name}</span>}
        <div className="flex gap-6 mt-6 md:mt-0">
-         <span>{content.contact?.email}</span>
-         <span>{content.contact?.phone}</span>
-       </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
        <span className="mt-6 md:mt-0 text-sm">© {new Date().getFullYear()}</span>
     </footer>
   </div>
 );
 
-export const PortfolioTemplate2 = ({ name, content }: TemplateProps) => (
+export const PortfolioTemplate2 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-full bg-[hsl(40,20%,96%)] text-stone-800">
-    <nav className="px-12 py-8 flex items-center justify-between">
-      <span className="font-bold text-2xl font-serif text-stone-900">{name}</span>
+    <nav className="px-12 py-8 flex items-center justify-between" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-bold text-2xl font-serif text-stone-900">{name}</span>}
       <div className="flex gap-8 text-sm font-medium text-stone-500 uppercase tracking-widest">
-        <span>Projects</span><span>About</span><span>Contact</span>
-      </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
     </nav>
     <div className="px-12 py-32 max-w-5xl">
       <h1 className="text-7xl font-bold font-serif leading-[1.1] text-stone-900 mb-8">{content.home?.headline}</h1>
       <p className="text-2xl text-stone-500 font-light max-w-2xl leading-relaxed">{content.home?.subtext}</p>
-      <button className="mt-16 border-b-2 border-stone-800 pb-2 text-lg font-bold uppercase tracking-widest hover:text-stone-500 hover:border-stone-500 transition-all">{content.home?.cta}</button>
+      <button className="mt-16 border-b-2 border-stone-800 pb-2 text-lg font-bold uppercase tracking-widest hover:text-stone-500 hover:border-stone-500 transition-all" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
     </div>
     <div className="px-12 py-20 bg-stone-100">
       <div className="flex flex-col md:flex-row gap-20">
@@ -82,16 +108,16 @@ export const PortfolioTemplate2 = ({ name, content }: TemplateProps) => (
         </div>
       ))}
     </div>
-    <footer className="px-12 py-20 border-t border-stone-200 text-center">
+    <footer className="px-12 py-20 border-t border-stone-200 text-center" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <h2 className="text-3xl font-serif font-bold text-stone-900 mb-6">{content.contact?.title}</h2>
        <p className="text-stone-500 text-xl font-light mb-12">{content.contact?.email} / {content.contact?.phone}</p>
-       <span className="font-bold text-xl font-serif text-stone-900 block mb-4">{name}</span>
+       {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-bold text-xl font-serif text-stone-900 block mb-4">{name}</span>}
        <p className="text-stone-400 text-sm">© {new Date().getFullYear()} All rights reserved.</p>
     </footer>
   </div>
 );
 
-export const PortfolioTemplate3 = ({ name, content }: TemplateProps) => (
+export const PortfolioTemplate3 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-mono min-h-full bg-[#0d1117] text-[#c9d1d9] selection:bg-[#1f6feb] selection:text-white">
     <div className="bg-[#161b22] px-6 py-3 flex items-center justify-between border-b border-[#30363d] text-sm">
       <div className="flex gap-2">
@@ -104,8 +130,15 @@ export const PortfolioTemplate3 = ({ name, content }: TemplateProps) => (
     </div>
     <div className="p-8 md:p-16">
       <div className="mb-12">
-        <span className="text-[#7ee787]">visitor@net</span><span className="text-[#8b949e]">:~ $</span> <span className="text-[#c9d1d9]">whoami</span>
-        <h1 className="text-5xl font-bold mt-4 mb-6 text-[#58a6ff] glow">{content.home?.headline}</h1>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="text-[#7ee787] cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}<h1 className="text-5xl font-bold mt-4 mb-6 text-[#58a6ff] glow">{content.home?.headline}</h1>
         <p className="text-xl text-[#8b949e] max-w-3xl leading-relaxed">{'>'} {content.home?.subtext}</p>
         <button className="mt-8 border border-[#30363d] bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] px-6 py-2 rounded-md font-bold transition-colors">
           ./{content.home?.cta?.toLowerCase().replace(/\s+/g, '-')}
@@ -114,11 +147,25 @@ export const PortfolioTemplate3 = ({ name, content }: TemplateProps) => (
       
       <div className="mb-12 border border-[#30363d] rounded-lg overflow-hidden bg-[#0d1117]">
          <div className="bg-[#161b22] px-4 py-2 text-sm text-[#8b949e] border-b border-[#30363d] flex justify-between">
-           <span>about.json</span>
-           <span>UTF-8</span>
-         </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className=" cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
          <div className="p-6 text-sm md:text-base leading-relaxed">
-            <span className="text-[#ff7b72]">const</span> <span className="text-[#79c0ff]">profile</span> <span className="text-[#ff7b72]">=</span> {'{'}
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="text-[#ff7b72] cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}{'{'}
             <div className="pl-8">
               <span className="text-[#7ee787]">"title"</span>: <span className="text-[#a5d6ff]">"{content.about?.title}"</span>,<br/>
               <span className="text-[#7ee787]">"bio"</span>: <span className="text-[#a5d6ff]">"{content.about?.text}"</span>
@@ -128,13 +175,26 @@ export const PortfolioTemplate3 = ({ name, content }: TemplateProps) => (
       </div>
 
       <div className="mb-12">
-        <span className="text-[#7ee787]">visitor@net</span><span className="text-[#8b949e]">:~ $</span> <span className="text-[#c9d1d9]">ls -la skills/</span>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="text-[#7ee787] cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}<div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           {(content.services?.items || []).map((s: string, i: number) => (
             <div key={i} className="flex items-center gap-4 text-[#8b949e] font-mono p-4 border border-[#30363d] rounded bg-[#161b22]/50 hover:border-[#58a6ff] hover:text-[#c9d1d9] transition-colors cursor-pointer">
-              <span className="text-[#d2a8ff]">drwxr-xr-x</span>
-              <span className="text-[#58a6ff] font-bold">{s.toLowerCase().replace(/\s+/g, '-')}</span>
-            </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="text-[#d2a8ff] cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
           ))}
         </div>
       </div>
@@ -142,7 +202,15 @@ export const PortfolioTemplate3 = ({ name, content }: TemplateProps) => (
     </div>
     <div className="border-t border-[#30363d] p-8 mt-20 flex flex-col md:flex-row justify-between items-center text-sm text-[#8b949e] bg-[#161b22]">
        <div>
-         <span className="text-[#7ee787]">echo</span> <span className="text-[#a5d6ff]">"{content.contact?.email}"</span><br/>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="text-[#7ee787] cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}<br/>
          <span className="text-[#7ee787]">echo</span> <span className="text-[#a5d6ff]">"{content.contact?.phone}"</span>
        </div>
        <div className="mt-6 md:mt-0 opacity-50">
@@ -152,21 +220,27 @@ export const PortfolioTemplate3 = ({ name, content }: TemplateProps) => (
   </div>
 );
 
-export const PortfolioTemplate4 = ({ name, content }: TemplateProps) => (
+export const PortfolioTemplate4 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-full bg-white text-black flex flex-col md:flex-row">
     <div className="md:w-24 md:h-screen md:sticky top-0 bg-[#f8f9fa] border-r border-gray-200 flex flex-row md:flex-col items-center justify-between py-8 px-6 md:px-0 text-sm uppercase font-bold tracking-[0.2em] transform transition-all z-20">
       <div className="md:-rotate-90 origin-center whitespace-nowrap mb-0 md:mb-12 mr-6 md:mr-0">{name}</div>
       <div className="flex flex-row md:flex-col gap-6 md:gap-12 md:-rotate-90 origin-center text-gray-400">
-        <span className="hover:text-black cursor-pointer transition-colors">Work</span>
-        <span className="hover:text-black cursor-pointer transition-colors">About</span>
-      </div>
+        {pages?.map(p => (
+           <span 
+              key={p.id} 
+              onClick={(e) => { e.preventDefault(); onNavigate?.(p.id); }} 
+              className="hover:text-black cursor-pointer transition-colors cursor-pointer hover:opacity-80 transition-opacity"
+           >
+              {p.name}
+           </span>
+        ))}</div>
       <div className="hidden md:block w-px h-12 bg-black/20 mt-12" />
     </div>
     <div className="flex-1 p-8 md:p-16 lg:p-24 overflow-auto">
       <div className="mb-24 md:mb-40 max-w-4xl">
         <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8">{content.home?.headline}</h1>
         <p className="text-xl md:text-3xl text-gray-500 font-light leading-snug">{content.home?.subtext}</p>
-        <button className="mt-12 bg-black text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors">{content.home?.cta}</button>
+        <button className="mt-12 bg-black text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors" onClick={(e) => { e.preventDefault(); if (content.links?.home_cta) onNavigate?.(content.links.home_cta); }}>{content.home?.cta}</button>
       </div>
       
       <div className="mb-32">
@@ -191,20 +265,20 @@ export const PortfolioTemplate4 = ({ name, content }: TemplateProps) => (
          </div>
       </div>
 
-      <footer className="text-center text-sm font-bold uppercase tracking-widest text-gray-400 py-12">
+      <footer className="text-center text-sm font-bold uppercase tracking-widest text-gray-400 py-12" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
         © {new Date().getFullYear()} {name} — ALL RIGHTS RESERVED
       </footer>
     </div>
   </div>
 );
 
-export const PortfolioTemplate5 = ({ name, content }: TemplateProps) => (
+export const PortfolioTemplate5 = ({ name, logo, pages, content, onNavigate, onGlobalEdit }: TemplateProps) => (
   <div className="font-sans min-h-screen bg-black text-white relative overflow-hidden">
     <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[radial-gradient(circle_at_center,#3b0764,transparent_70%)] opacity-60 mix-blend-screen pointer-events-none" />
     <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle_at_center,#1e1b4b,transparent_70%)] opacity-80 mix-blend-screen pointer-events-none" />
     
-    <nav className="relative z-10 px-8 py-8 flex justify-between items-center mix-blend-difference">
-      <span className="font-black text-2xl tracking-[0.2em]">{name}</span>
+    <nav className="relative z-10 px-8 py-8 flex justify-between items-center mix-blend-difference" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
+      {logo ? <img src={logo} alt={name} className="h-8 object-contain" /> : <span className="font-black text-2xl tracking-[0.2em]">{name}</span>}
       <div className="font-bold text-xs tracking-widest uppercase opacity-70">Interactive // 2026</div>
     </nav>
     
@@ -239,7 +313,7 @@ export const PortfolioTemplate5 = ({ name, content }: TemplateProps) => (
        </div>
     </div>
 
-    <footer className="relative z-10 border-t border-white/10 px-8 md:px-24 py-16 flex flex-col md:flex-row justify-between items-end">
+    <footer className="relative z-10 border-t border-white/10 px-8 md:px-24 py-16 flex flex-col md:flex-row justify-between items-end" onClick={(e) => { e.stopPropagation(); onGlobalEdit?.('contact'); }}>
        <div>
          <h2 className="text-4xl font-bold mb-6">{content.contact?.title}</h2>
          <a href={`mailto:${content.contact?.email}`} className="text-2xl opacity-60 hover:opacity-100 transition-opacity block mb-2">{content.contact?.email}</a>
