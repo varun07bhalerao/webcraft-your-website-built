@@ -52,7 +52,7 @@ export const buildStaticSiteZip = async (project: WebsiteProject): Promise<Blob>
   </style>
 </head>
 <body>
-  \${componentHtml}
+  ${componentHtml}
 
   <script>
     // Navigation Interceptor
@@ -93,7 +93,7 @@ export const buildStaticSiteZip = async (project: WebsiteProject): Promise<Blob>
 };
 
 export const deployToNetlify = async (zipBlob: Blob, token: string): Promise<string> => {
-  const response = await fetch('https://api.netlify.com/api/v1/sites', {
+  const response = await fetch('https://corsproxy.io/?https://api.netlify.com/api/v1/sites', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,

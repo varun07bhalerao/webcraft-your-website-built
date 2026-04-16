@@ -5,11 +5,12 @@ import { Rocket, ExternalLink, Globe, ArrowLeft, CheckCircle2, Loader2, Key } fr
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { buildStaticSiteZip, deployToNetlify } from '@/lib/netlifyDeploy';
+import { deployToGithubPages } from '@/lib/githubDeploy';
 import { toast } from 'sonner';
 
 const hosts = [
   { id: 'netlify', name: 'Netlify', desc: 'Automatic deployments with CDN', color: 'from-teal-400 to-emerald-500' },
-  { id: 'firebase', name: 'Firebase Hosting', desc: 'Google-backed free hosting (Coming Soon)', color: 'from-amber-400 to-orange-500' },
+  { id: 'github', name: 'GitHub Pages', desc: 'Deploy to GitHub repository', color: 'from-slate-700 to-slate-900' },
   { id: 'vercel', name: 'Vercel', desc: 'Edge network deployment (Coming Soon)', color: 'from-gray-700 to-gray-900' },
 ];
 
@@ -20,6 +21,8 @@ const Deploy = () => {
 
   const [activeHost, setActiveHost] = useState<string | null>(null);
   const [netlifyToken, setNetlifyToken] = useState('');
+  const [githubToken, setGithubToken] = useState('');
+  const [githubRepo, setGithubRepo] = useState('');
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployedUrl, setDeployedUrl] = useState<string | null>(null);
 
@@ -48,6 +51,31 @@ const Deploy = () => {
     }
   };
 
+  const handleDeployGithub = async () => {
+    if (!currentProject) return;
+    if (!githubToken.trim()) {
+      toast.error('Please provide a GitHub Personal Access Token');
+      return;
+    }
+    if (!githubRepo.trim() || githubRepo.includes(' ')) {
+      toast.error('Please provide a valid repository name (no spaces)');
+      return;
+    }
+
+    setIsDeploying(true);
+    try {
+      toast.info('Initializing GitHub repository...');
+      const url = await deployToGithubPages(currentProject, githubToken.trim(), githubRepo.trim());
+      setDeployedUrl(url);
+      toast.success('Successfully deployed to GitHub Pages!');
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Deployment failed');
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+
   if (deployedUrl) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -57,7 +85,7 @@ const Deploy = () => {
            </div>
            <h1 className="text-3xl font-display font-bold mb-4">Deployment Complete!</h1>
            <p className="text-muted-foreground mb-8">
-             Your website is now live globally on Netlify's CDN.
+             Your website is now live!
            </p>
            
            <a 
@@ -99,10 +127,10 @@ const Deploy = () => {
             {hosts.map((h, i) => (
               <button
                 key={h.id}
-                onClick={() => h.id === 'netlify' && setActiveHost(h.id)}
-                className={`w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:shadow-md transition-all text-left animate-fade-in ${h.id === 'netlify' ? 'hover:border-primary/50 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                onClick={() => ['netlify', 'github'].includes(h.id) && setActiveHost(h.id)}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:shadow-md transition-all text-left animate-fade-in ${['netlify', 'github'].includes(h.id) ? 'hover:border-primary/50 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                 style={{ animationDelay: `${i * 100}ms` }}
-                disabled={h.id !== 'netlify'}
+                disabled={!['netlify', 'github'].includes(h.id)}
               >
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${h.color} flex items-center justify-center shrink-0`}>
                   <Globe className="w-5 h-5 text-white" />
@@ -145,6 +173,50 @@ const Deploy = () => {
                 >
                   {isDeploying ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Rocket className="w-4 h-4 mr-2" />}
                   {isDeploying ? 'Deploying...' : 'Push to Netlify'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeHost === 'github' && (
+          <div className="w-full animate-fade-in bg-card p-6 rounded-2xl border border-border shadow-sm mb-8">
+            <h3 className="font-bold text-lg mb-2">GitHub Pages Configuration</h3>
+            <p className="text-sm text-muted-foreground mb-6">Create a classic Personal Access Token (with "repo" scope) in your GitHub account settings to deploy a new repository on your behalf.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-semibold mb-2 block">Repository Name</label>
+                <div className="relative">
+                  <Input 
+                    placeholder="my-cool-website" 
+                    value={githubRepo}
+                    onChange={e => setGithubRepo(e.target.value.toLowerCase().replace(/\\s+/g, '-'))}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-semibold mb-2 block">Personal Access Token</label>
+                <div className="relative">
+                  <Key className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+                  <Input 
+                    type="password"
+                    placeholder="Enter auth token..." 
+                    value={githubToken}
+                    onChange={e => setGithubToken(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button variant="outline" className="flex-1" onClick={() => setActiveHost(null)}>Cancel</Button>
+                <Button 
+                  className="flex-1 bg-slate-800 hover:bg-slate-900 text-white" 
+                  onClick={handleDeployGithub}
+                  disabled={isDeploying || !githubToken || !githubRepo}
+                >
+                  {isDeploying ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Rocket className="w-4 h-4 mr-2" />}
+                  {isDeploying ? 'Deploying...' : 'Push to GitHub'}
                 </Button>
               </div>
             </div>
